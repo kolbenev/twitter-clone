@@ -4,7 +4,7 @@ services:
   database:
     image: postgres:17.1
     volumes:
-      - ./server/database/db:/var/lib/postgresql/data
+      - ./server/database/pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: admin
       POSTGRES_USER: admin
