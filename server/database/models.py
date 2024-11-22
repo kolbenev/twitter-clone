@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from database.confdb import Base
+from server.database.confdb import Base
 
 
 class Follow(Base):
