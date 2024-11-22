@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  database:
+    image: postgres:17.1
+    volumes:
+      - ./server/database/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: twitter
+    ports:
+      - "5432:5432"
