@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from confdb import Base
+from database.confdb import Base
 
 
 class Follow(Base):
@@ -37,7 +37,8 @@ class Tweet(Base):
     content = Column(String(280), nullable=False)
 
     author = relationship("User", back_populates="tweets")
-    likes = relationship("Like", back_populates="tweets")
+    likes = relationship("Like", back_populates="tweet")
+    media = relationship("Media", back_populates="tweet")
 
 
 class Like(Base):
@@ -57,5 +58,4 @@ class Media(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     file_path = Column(String, nullable=False)
     tweet_id = Column(Integer, ForeignKey("tweets.id"))
-
     tweet = relationship("Tweet", back_populates="media")
