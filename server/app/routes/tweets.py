@@ -27,7 +27,7 @@ async def tweets(api_key: str = Header(...)):
             {
                 "id": tweet.id,
                 "content": tweet.content,
-                "attachment": [media.file_url for media in tweet.media],
+                "attachments": [media.file_url for media in tweet.media],
                 "author": {
                     "id": tweet.author.id,
                     "name": tweet.author.name,
@@ -65,6 +65,7 @@ async def post_tweets(tweet_data: dict, api_key: str = Header(...)):
         media_items = media_query.scalars().all()
         for media in media_items:
             media.tweet = new_tweet
+            media.tweet_id = new_tweet.id
 
     return {"result": True, "tweet_id": new_tweet.id}
 
