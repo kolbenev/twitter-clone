@@ -16,5 +16,7 @@ services:
     build:
       context: client
       dockerfile: Dockerfile
+    volumes:
+      - ./server/medias/:/app/medias
     ports:
       - "80:80"

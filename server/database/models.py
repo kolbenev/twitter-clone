@@ -53,9 +53,10 @@ class Like(Base):
 
 
 class Media(Base):
-    __tablename__ = "media"
+    __tablename__ = "medias"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     file_path = Column(String, nullable=False)
+    file_url = Column(String, nullable=False)
     tweet_id = Column(Integer, ForeignKey("tweets.id"))
     tweet = relationship("Tweet", back_populates="media")
