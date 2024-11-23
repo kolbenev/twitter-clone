@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Header, HTTPException
 
-
 from server.app.routes.utils import (
     get_user_by_apikey_or_id,
     json_about_user,

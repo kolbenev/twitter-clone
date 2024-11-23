@@ -1,5 +1,8 @@
 import os
 from urllib.parse import urljoin
+import random
+import string
+import aiofiles
 
 from fastapi import APIRouter, Header, UploadFile, HTTPException
 
@@ -18,18 +21,22 @@ async def post_medias(file: UploadFile, api_key: str = Header(...)):
     if not file:
         raise HTTPException(status_code=400, detail="No file upload")
 
-    media_dir = f"server/medias/"
+    media_dir = f"server/medias/{user.id}"
     os.makedirs(media_dir, exist_ok=True)
-    file_path = os.path.join(media_dir, file.filename)
 
-    with open(file_path, "wb") as medias_file:
+    file_format = file.filename.split(".")[-1]
+    new_file_name = f"{''.join(random.choice(string.ascii_letters) for _ in range(10))}.{file_format}"
+
+    file_path = os.path.join(media_dir, new_file_name)
+
+    async with aiofiles.open(file_path, "wb") as medias_file:
         content = await file.read()
-        medias_file.write(content)
+        await medias_file.write(content)
 
-    file_url = urljoin(BASE_URL, f"medias/{file.filename}")
+    file_url = urljoin(BASE_URL, f"medias/{user.id}/{new_file_name}")
 
     new_media = Media(file_path=file_path, file_url=file_url)
     session.add(new_media)
-    await session.commit()
+    await session.flush()
 
     return {"result": True, "media_id": new_media.id}

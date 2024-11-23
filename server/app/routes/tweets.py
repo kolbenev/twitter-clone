@@ -1,3 +1,5 @@
+import os
+
 from sqlalchemy.future import select
 
 from fastapi import APIRouter, Header, HTTPException
@@ -8,6 +10,7 @@ from server.app.routes.utils import (
     get_user_by_apikey_or_id,
     lazy_get_tweet_by_id,
     get_like,
+    get_tweet_by_id,
 )
 from server.database.confdb import session
 from server.database.models import Tweet, User, Media, Like
@@ -55,7 +58,7 @@ async def post_tweets(tweet_data: dict, api_key: str = Header(...)):
     content = tweet_data.get("tweet_data")
     new_tweet = Tweet(content=content, author_id=user.id)
     session.add(new_tweet)
-    await session.commit()
+    await session.flush()
 
     media_ids = tweet_data.get("tweet_media_ids", [])
     if media_ids:
@@ -64,9 +67,10 @@ async def post_tweets(tweet_data: dict, api_key: str = Header(...)):
         )
         media_items = media_query.scalars().all()
         for media in media_items:
-            media.tweet = new_tweet
             media.tweet_id = new_tweet.id
+            session.add(media)
 
+    await session.commit()
     return {"result": True, "tweet_id": new_tweet.id}
 
 
@@ -97,11 +101,16 @@ async def delete_like_on_the_tweet(tweet_id: int, api_key: str = Header(...)):
 @router.delete("/{tweet_id}")
 async def delete_tweet(tweet_id: int, api_key: str = Header(...)):
     user: User = await get_user_by_apikey_or_id(api_key=api_key, session=session)
-    tweet: Tweet = await lazy_get_tweet_by_id(tweet_id=tweet_id, session=session)
+    tweet: Tweet = await get_tweet_by_id(tweet_id=tweet_id, session=session)
 
     if tweet.author_id == user.id:
+        for media in tweet.media:
+            if os.path.exists(media.file_path):
+                os.remove(media.file_path)
+
         await session.delete(tweet)
         await session.commit()
+
         return {"result": True}
     else:
         raise HTTPException(

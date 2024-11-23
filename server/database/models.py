@@ -37,8 +37,8 @@ class Tweet(Base):
     content = Column(String(280), nullable=False)
 
     author = relationship("User", back_populates="tweets")
-    likes = relationship("Like", back_populates="tweet")
-    media = relationship("Media", back_populates="tweet")
+    likes = relationship("Like", back_populates="tweet", cascade="all, delete-orphan")
+    media = relationship("Media", back_populates="tweet", cascade="all, delete-orphan")
 
 
 class Like(Base):
