@@ -1,13 +1,18 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker, async_session
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
 
 
-database_url = "postgresql+asyncpg://test:test@localhost:5432/test_twitter"
-engine = create_async_engine(database_url, echo=True)
-Session = async_sessionmaker(
-    bind=engine, class_=AsyncSession, expire_on_commit=False
+# Асинхронное подключение
+async_database_url = "postgresql+asyncpg://test:test@localhost:5432/test_twitter"
+async_engine = create_async_engine(url=async_database_url, echo=True)
+async_Session = async_sessionmaker(
+    bind=async_engine, class_=AsyncSession,
 )
-session = Session()
+async_session = async_Session()
 
-# async def get_session():
-#     async with Session as session:
-#         yield session
+# Синхронное подключение
+sync_database_url = "postgresql+psycopg://test:test@localhost:5432/test_twitter"
+sync_engine = create_engine(url=sync_database_url, echo=True)
+sync_Session = sessionmaker(bind=sync_engine)
+sync_session = sync_Session()
