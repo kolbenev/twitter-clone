@@ -5,18 +5,36 @@ import string
 import aiofiles
 
 from fastapi import APIRouter, Header, UploadFile, HTTPException
+from fastapi.responses import JSONResponse
 
 from server.database.confdb import session
 from server.database.models import User, Media
-from server.app.routes.utils import lazy_get_user_by_apikey_or_id
+from server.app.routes.utils import lazy_get_user_by_apikey
+
 
 router = APIRouter()
 BASE_URL = "http://localhost"
 
 
 @router.post("/")
-async def post_medias(file: UploadFile, api_key: str = Header(...)):
-    user: User = await lazy_get_user_by_apikey_or_id(api_key=api_key, session=session)
+async def post_medias(file: UploadFile, api_key: str = Header(...)) -> JSONResponse:
+    """
+    Загружает медиафайл на сервер.
+
+    Функция позволяет пользователю загрузить медиафайл
+    на сервер. Если файл не был загружен, возвращается
+    ошибка с кодом 400. Файл сохраняется в директории,
+    привязанной к пользователю, и генерируется уникальное
+    имя для файла. После успешной загрузки медиафайл
+    сохраняется в базе данных, и возвращается ответ с
+    результатом операции и ID нового медиафайла.
+
+    :param file: Загружаемый файл.
+    :param api_key: API-ключ текущего пользователя, использующего функцию.
+    :return: Ответ в формате JSON с результатом операции и ID загруженного медиафайла.
+    :raises HTTPException: Если файл не был загружен.
+    """
+    user: User = await lazy_get_user_by_apikey(api_key=api_key, session=session)
 
     if not file:
         raise HTTPException(status_code=400, detail="No file upload")
@@ -39,4 +57,4 @@ async def post_medias(file: UploadFile, api_key: str = Header(...)):
     session.add(new_media)
     await session.flush()
 
-    return {"result": True, "media_id": new_media.id}
+    return JSONResponse({"result": True, "media_id": new_media.id})
