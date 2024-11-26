@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Header, HTTPException
 from fastapi.responses import JSONResponse
-
+from server.app.loggerconf import logger
 from server.app.routes.utils import (
     get_user_by_apikey,
     get_user_by_id,
@@ -76,6 +76,7 @@ async def post_users_follow(user_id: int, api_key: str = Header(...)) -> JSONRes
             detail=f"{user.name} is already subscribed to {follow.name}",
         )
 
+    logger.info(f'{user.name} subscribed to {follow.name}')
     await session.commit()
     return JSONResponse({"result": True})
 
@@ -106,6 +107,7 @@ async def delete_users_follow(user_id: int, api_key: str = Header(...)) -> JSONR
             status_code=400, detail=f"{user.name} doesn't follow {follow.name}"
         )
 
+    logger.info(f'{user.name} unfollowed {follow.name}')
     await session.commit()
 
     return JSONResponse({"result": True})

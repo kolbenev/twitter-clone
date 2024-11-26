@@ -6,6 +6,7 @@ from sqlalchemy.future import select
 from fastapi import APIRouter, Header, HTTPException
 from fastapi.responses import JSONResponse
 
+from server.app.loggerconf import logger
 from server.app.routes.utils import (
     lazy_get_user_by_apikey,
     get_all_tweet,
@@ -78,6 +79,10 @@ async def post_tweets(tweet_data: dict, api_key: str = Header(...)) -> JSONRespo
             session.add(media)
 
     await session.commit()
+    logger.info(
+        f'User {user.name}:{user.id} created a new tweet. '
+        f'Tweet ID: {new_tweet.id}, Content: "{content}", Media IDs: {media_ids}'
+    )
 
     return JSONResponse({"result": True, "tweet_id": new_tweet.id})
 
@@ -105,7 +110,7 @@ async def like_the_tweet(tweet_id: int, api_key: str = Header(...)) -> JSONRespo
     except HTTPException:
         session.add(Like(user_id=user.id, tweet_id=tweet.id))
         await session.commit()
-
+        logger.info(f'{user.name}:{user.id} like tweet:{tweet.id}')
         return JSONResponse({"result": True})
 
     raise HTTPException(status_code=400, detail="Already liked the tweet")
@@ -134,7 +139,7 @@ async def delete_like_on_the_tweet(
 
     await session.delete(like)
     await session.commit()
-
+    logger.info(f'{user.name}:{user.id} unlike tweet:{tweet.id}')
     return JSONResponse({"result": True})
 
 
@@ -161,13 +166,16 @@ async def delete_tweet(tweet_id: int, api_key: str = Header(...)) -> JSONRespons
         for media in tweet.media:
             if os.path.exists(media.file_path):
                 os.remove(media.file_path)
+                logger.info(f'{media.file_path} deleted')
 
         await session.delete(tweet)
+        logger.info(f'User {user.name}:{user.id} deleted tweet:{tweet_id}')
         await session.commit()
 
         return JSONResponse({"result": True})
 
     else:
+        logger.warning(f"{user.name}:{user.id} try to delete tweet '{tweet.id}, but he is not the author of this tweet'")
         raise HTTPException(
             status_code=403, detail="The user is not the author of the tweet"
         )

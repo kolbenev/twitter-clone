@@ -6,6 +6,8 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 
+from server.app.loggerconf import logger
+
 
 async def get_user_by_apikey(session: AsyncSession, api_key: str) -> User:
     """
@@ -29,6 +31,8 @@ async def get_user_by_apikey(session: AsyncSession, api_key: str) -> User:
     user = result.scalars().first()
     if user:
         return user
+
+    logger.warning(f"User not found for API key: {api_key}")
     raise HTTPException(status_code=404, detail="User not found")
 
 
@@ -54,6 +58,8 @@ async def get_user_by_id(user_id: int, session: AsyncSession) -> User:
     user = result.scalars().first()
     if user:
         return user
+
+    logger.warning(f"User not found for ID: {user_id}")
     raise HTTPException(status_code=404, detail="User not found")
 
 
@@ -79,6 +85,8 @@ async def get_user_by_apikey_with_following(
     user = result.scalars().first()
     if user:
         return user
+
+    logger.warning(f"User not found for API key: {api_key}")
     raise HTTPException(status_code=404, detail="User not found")
 
 
@@ -131,6 +139,8 @@ async def lazy_get_user_by_apikey(session: AsyncSession, api_key: str) -> User:
     user = result.scalars().first()
     if user:
         return user
+
+    logger.warning(f"User not found for API key: {api_key}")
     raise HTTPException(status_code=404, detail="User not found")
 
 
@@ -152,6 +162,8 @@ async def lazy_get_user_by_id(session: AsyncSession, user_id: int) -> User:
     user = result.scalars().first()
     if user:
         return user
+
+    logger.warning(f"User not found for ID: {user_id}")
     raise HTTPException(status_code=404, detail="User not found")
 
 
@@ -228,6 +240,7 @@ async def get_tweet_by_id(session: AsyncSession, tweet_id: int) -> Tweet:
     tweets = result.scalars().first()
 
     if not tweets:
+        logger.warning(f"Tweet not found for ID: {tweet_id}")
         raise HTTPException(status_code=404, detail="Tweet not found")
 
     return tweets
@@ -249,6 +262,7 @@ async def lazy_get_tweet_by_id(tweet_id: int, session: AsyncSession) -> Tweet:
     tweet = result.scalars().first()
 
     if not tweet:
+        logger.warning(f'Tweet not found for ID {tweet_id}')
         raise HTTPException(status_code=404, detail="Tweet not found")
 
     return tweet
@@ -274,6 +288,7 @@ async def get_like(tweet_id: int, user_id: int, session: AsyncSession) -> Like:
     like = result.scalars().first()
 
     if not like:
+        logger.warning(f"Like not found, user_id:{user_id}, tweet_id:{tweet_id}")
         raise HTTPException(status_code=404, detail="Like not found")
 
     return like
