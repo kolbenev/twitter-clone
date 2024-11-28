@@ -1,39 +1,26 @@
-import pytest_asyncio
 import pytest
 
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-
-from server.app.routes.utils import lazy_get_user_by_apikey_or_id
-from server.database.models import Base
+from server.tests.confdb import session, engine
 from server.database.models import User
-
-database_url = "postgresql+asyncpg://test:test@localhost:5433/test_twitter"
-engine = create_async_engine(url=database_url, echo=True)
-session_factory = async_sessionmaker(
-    bind=engine, class_=AsyncSession, expire_on_commit=False
-)
-session = session_factory()
+from server.database.confdb import Base
+from server.tests.getter_variables import TEST_APIKEY, TEST_USERNAME
 
 
-@pytest.fixture
-async def setup_teardown():
-    async with engine.begin() as conn:
-        print('Создание таблиц')
-        await conn.run_sync(Base.metadata.create_all)
+@pytest.fixture(scope="session", autouse=True)
+def setup_teardown():
+    Base.metadata.create_all(engine)
     yield
-    async with engine.begin() as conn:
-        print('Удаление таблиц')
-        await conn.run_sync(Base.metadata.drop_all)
+    Base.metadata.drop_all(engine)
 
 
-async def test_get_lazy_user_api(setup_teardown):
-
+@pytest.fixture(scope="class")
+def init_user():
     new_user = User(
-        name="michael",
-        apikey='test',
+        name=TEST_USERNAME,
+        apikey=TEST_APIKEY,
     )
     session.add(new_user)
-    await session.flush()
-
-    user: User = await lazy_get_user_by_apikey_or_id(user_id=new_user.id, session=session)
-    assert user.id == new_user.id
+    session.commit()
+    yield
+    session.delete(new_user)
+    session.commit()
