@@ -64,7 +64,12 @@ async def post_users_follow(user_id: int, api_key: str = Header(...)) -> JSONRes
     user: User = await get_user_by_apikey(api_key=api_key, session=session)
     follow: User = await lazy_get_user_by_id(user_id=user_id, session=session)
 
-    if follow not in user.following:
+    if user.id == follow.id:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Trying to subscribe to yourself",
+        )
+    elif follow not in user.following:
         user.following.append(follow)
     else:
         raise HTTPException(

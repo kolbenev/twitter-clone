@@ -1,4 +1,4 @@
-from server.database.models import User
+from server.database.models import User, Tweet, Like
 from faker import Faker
 
 from typing import Dict
@@ -6,28 +6,8 @@ from typing import Dict
 from sqlalchemy.orm import joinedload, Session
 from sqlalchemy import select
 
+
 Faker = Faker()
-
-
-def create_new_user(session: Session) -> User:
-    new_user = User(
-        name=Faker.name(),
-        apikey=Faker.password(),
-    )
-
-    session.add(new_user)
-    session.commit()
-    return new_user
-
-
-def get_user_by_apikey(apikey: str, session: Session) -> User:
-    stmt = (
-        select(User)
-        .where(User.apikey == apikey)
-        .options(joinedload(User.followers), joinedload(User.following))
-    )
-    user = session.execute(stmt).scalars().first()
-    return user
 
 
 def get_dict_about_user(user: User) -> Dict:
@@ -52,3 +32,38 @@ def get_dict_about_user(user: User) -> Dict:
             ],
         },
     }
+
+
+def get_dict_tweet_feed(session: Session) -> Dict:
+    stmt = select(Tweet).options(
+        joinedload(Tweet.author),
+        joinedload(Tweet.likes).joinedload(Like.user),
+        joinedload(Tweet.media),
+    )
+    result = session.execute(stmt)
+    tweets = result.scalars().unique().all()
+
+    tweet_feed = {
+        "result": True,
+        "tweets": [
+            {
+                "id": tweet.id,
+                "content": tweet.content,
+                "attachments": [media.file_url for media in tweet.media],
+                "author": {
+                    "id": tweet.author.id,
+                    "name": tweet.author.name,
+                },
+                "likes": [
+                    {
+                        "user_id": like.user_id,
+                        "name": like.user.name,
+                    }
+                    for like in tweet.likes
+                ],
+            }
+            for tweet in tweets
+        ],
+    }
+
+    return tweet_feed
