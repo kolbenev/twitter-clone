@@ -5,12 +5,10 @@ from server.app.routes.utils import (
     get_user_by_apikey,
     get_user_by_id,
     json_about_user,
-    lazy_get_user_by_id,
-    get_user_by_apikey_with_following,
+    lazy_get_user_by_id
 )
 from server.database.confdb import session
 from server.database.models import User
-
 
 router = APIRouter()
 
@@ -63,10 +61,8 @@ async def post_users_follow(user_id: int, api_key: str = Header(...)) -> JSONRes
     :return: Ответ в формате JSON с результатом операции.
     :raises HTTPException: Если пользователь уже подписан на другого.
     """
-    user: User = await get_user_by_apikey_with_following(
-        api_key=api_key, session=session
-    )
-    follow: User = await get_user_by_id(user_id=user_id, session=session)
+    user: User = await get_user_by_apikey(api_key=api_key, session=session)
+    follow: User = await lazy_get_user_by_id(user_id=user_id, session=session)
 
     if follow not in user.following:
         user.following.append(follow)
@@ -95,9 +91,7 @@ async def delete_users_follow(user_id: int, api_key: str = Header(...)) -> JSONR
     :return: Ответ в формате JSON с результатом операции.
     :raises HTTPException: Если пользователь уже подписан на другого.
     """
-    user: User = await get_user_by_apikey_with_following(
-        api_key=api_key, session=session
-    )
+    user: User = await get_user_by_apikey(api_key=api_key, session=session)
     follow: User = await lazy_get_user_by_id(user_id=user_id, session=session)
 
     if follow in user.following:

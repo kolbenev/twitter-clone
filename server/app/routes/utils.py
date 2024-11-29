@@ -15,7 +15,7 @@ async def get_user_by_apikey(session: AsyncSession, api_key: str) -> User:
 
     Если пользователь найден, возвращается объект User.
     В противном случае вызывается исключение HTTPException
-    с кодом 404 и сообщением "User not found".
+    с кодом 404 и сообщением "User not found, invalid API key".
 
     :param session: Асинхронная сессия SQLAlchemy.
     :param api_key: API-ключ пользователя.
@@ -33,7 +33,7 @@ async def get_user_by_apikey(session: AsyncSession, api_key: str) -> User:
         return user
 
     logger.warning(f"User not found for API key: {api_key}")
-    raise HTTPException(status_code=404, detail="User not found")
+    raise HTTPException(status_code=404, detail="User not found, invalid API key")
 
 
 async def get_user_by_id(user_id: int, session: AsyncSession) -> User:
@@ -60,33 +60,6 @@ async def get_user_by_id(user_id: int, session: AsyncSession) -> User:
         return user
 
     logger.warning(f"User not found for ID: {user_id}")
-    raise HTTPException(status_code=404, detail="User not found")
-
-
-async def get_user_by_apikey_with_following(
-    session: AsyncSession, api_key: str
-) -> User:
-    """
-    Получает пользователя по API-ключу, подгружая его подписки.
-
-    Если пользователь найден, возвращается объект User.
-    В противном случае вызывается исключение HTTPException
-    с кодом 404 и сообщением "User not found".
-
-    :param session: Асинхронная сессия SQLAlchemy.
-    :param api_key: API-ключ пользователя.
-    :return: Объект User.
-    :raises HTTPException: Если пользователь не найден.
-    """
-    stmt = (
-        select(User).where(User.apikey == api_key).options(joinedload(User.following))
-    )
-    result = await session.execute(stmt)
-    user = result.scalars().first()
-    if user:
-        return user
-
-    logger.warning(f"User not found for API key: {api_key}")
     raise HTTPException(status_code=404, detail="User not found")
 
 
@@ -127,7 +100,7 @@ async def lazy_get_user_by_apikey(session: AsyncSession, api_key: str) -> User:
 
     Если пользователь найден, возвращается объект User.
     В противном случае вызывается исключение HTTPException
-    с кодом 404 и сообщением "User not found".
+    с кодом 404 и сообщением "User not found, invalid API key".
 
     :param session: Асинхронная сессия SQLAlchemy.
     :param api_key: API-ключ пользователя.
@@ -141,7 +114,7 @@ async def lazy_get_user_by_apikey(session: AsyncSession, api_key: str) -> User:
         return user
 
     logger.warning(f"User not found for API key: {api_key}")
-    raise HTTPException(status_code=404, detail="User not found")
+    raise HTTPException(status_code=404, detail="User not found, invalid API key")
 
 
 async def lazy_get_user_by_id(session: AsyncSession, user_id: int) -> User:
