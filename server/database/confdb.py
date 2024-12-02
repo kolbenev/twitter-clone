@@ -2,13 +2,15 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 
+from server.database.getter_variables import DB_PASSWORD, DB_NAME, DB_USER, DB_HOST
+
 
 # Синхронный движок для Alembic
-sync_url = "postgresql+psycopg2://admin:admin@localhost:5432/twitter"
+sync_url = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
 engine = create_engine(sync_url)
 
 # Асинхронный движок для приложения
-async_url = "postgresql+asyncpg://admin:admin@localhost:5432/twitter"
+async_url = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
 async_engine = create_async_engine(async_url)
 
 Session = async_sessionmaker(

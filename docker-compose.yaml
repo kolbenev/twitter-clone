@@ -1,14 +1,37 @@
 services:
-#  test_database:
-#    image: postgres:17.1
-#    environment:
-#      POSTGRES_PASSWORD: test
-#      POSTGRES_USER: test
-#      POSTGRES_DB: test_twitter
-#    ports:
-#      - "5433:5432"
+  test_db:
+    profiles:
+      - test
+    image: postgres:17.1
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: test
+      POSTGRES_DB: twitter_test
+    ports:
+      - "5432:5432"
+
+  test_app:
+    profiles:
+      - test
+    build:
+      context: server
+      dockerfile: Dockerfile.Testing
+    environment:
+      APIKEY: "APIKEY"
+      USERNAME: "USERNAME"
+      DB_USER: "test"
+      DB_PASSWORD: "test"
+      DB_NAME: "twitter_test"
+      DB_HOST: "test_db"
+      API_URL: "http://test_app:8000/api"
+    depends_on:
+      - test_db
+
+# ============== PROD ==============
 
   database:
+    profiles:
+      - prod
     image: postgres:17.1
     volumes:
       - ./server/database/pgdata:/var/lib/postgresql/data
@@ -19,11 +42,37 @@ services:
     ports:
       - "5432:5432"
 
-#  client:
-#    build:
-#      context: client
-#      dockerfile: Dockerfile
-#    volumes:
-#      - ./server/medias/:/app/medias
-#    ports:
-#      - "80:80"
+  server:
+    profiles:
+      - prod
+    environment:
+      DB_USER: "admin"
+      DB_PASSWORD: "admin"
+      DB_NAME: "twitter"
+      DB_HOST: "database"
+    build:
+      context: server
+      dockerfile: Dockerfile.Prod
+    volumes:
+      - ./server/medias/:/dirfortest/server/medias
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+
+  client:
+    profiles:
+      - prod
+    build:
+      context: client
+      dockerfile: Dockerfile
+    volumes:
+      - ./server/medias/:/app/medias/
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+
+networks:
+  app_network:
+    driver: bridge

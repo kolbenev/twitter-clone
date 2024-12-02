@@ -1,0 +1,17 @@
+FROM python:3.12
+
+WORKDIR /dirfortest
+
+COPY requirements_true.txt .
+
+RUN pip install --no-cache-dir -r requirements_true.txt
+
+COPY app server/app/
+COPY database/confdb.py server/database/
+COPY database/models.py server/database/
+COPY database/getter_variables.py server/database/
+COPY tests server/tests/
+
+ENV PYTHONPATH=/dirfortest/
+
+CMD ["pytest"]
