@@ -33,6 +33,7 @@ services:
   database:
     profiles:
       - prod
+    container_name: database
     image: postgres:17.1
     volumes:
       - ./server/database/pgdata:/var/lib/postgresql/data
@@ -59,7 +60,7 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - client
+      - database
 
   client:
     profiles:
@@ -72,4 +73,9 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - database
+      - server
+
+networks:
+  default:
+    name: twitter_clone_network
+    driver: bridge

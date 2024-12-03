@@ -3,7 +3,6 @@ FROM python:3.12
 WORKDIR /dirforprod
 
 COPY requirements_for_prod.txt .
-
 RUN pip install --no-cache-dir -r requirements_for_prod.txt
 
 COPY app server/app/
@@ -11,6 +10,9 @@ COPY database/confdb.py server/database/
 COPY database/models.py server/database/
 COPY database/getter_variables.py server/database/
 
+COPY database/alembic.ini server/database/
+COPY database/migrations/ server/database/migrations
+
 ENV PYTHONPATH=/dirforprod/
 
-CMD ["uvicorn", "server.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["bash", "-c", "alembic -c server/database/alembic.ini upgrade head && uvicorn server.app.main:app --host 0.0.0.0 --port 8000"]
