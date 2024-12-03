@@ -1,7 +1,5 @@
 # Twitter-clone
 
----
-
 **Twitter-clone** — это курсовой проект, созданный в рамках итоговой работы по модулю 
 *Python Advanced* на курсе "Python-разработчик" от SkillBox.  
 
