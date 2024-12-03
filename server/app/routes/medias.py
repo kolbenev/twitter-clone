@@ -1,3 +1,7 @@
+"""
+Модуль роута /api/medias/
+"""
+
 import os
 from urllib.parse import urljoin
 import random
@@ -38,7 +42,9 @@ async def post_medias(file: UploadFile, api_key: str = Header(...)) -> JSONRespo
     user: User = await lazy_get_user_by_apikey(api_key=api_key, session=session)
 
     if not file:
-        logger.warning(f'User {user.name}:{user.id} attempted to upload a media file but no file was provided.')
+        logger.warning(
+            f"User {user.name}:{user.id} attempted to upload a media file but no file was provided."
+        )
         raise HTTPException(status_code=400, detail="No file upload")
 
     media_dir = f"server/medias/{user.id}"

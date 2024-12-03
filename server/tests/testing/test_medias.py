@@ -1,3 +1,7 @@
+"""
+Модуль тестирования роута /api/medias/
+"""
+
 from io import BytesIO
 from server.database.models import Media
 from typing import Dict

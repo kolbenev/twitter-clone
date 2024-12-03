@@ -1,6 +1,6 @@
 FROM python:3.12
 
-WORKDIR /dirfortest
+WORKDIR /dirforprod
 
 COPY requirements_for_prod.txt .
 
@@ -11,6 +11,6 @@ COPY database/confdb.py server/database/
 COPY database/models.py server/database/
 COPY database/getter_variables.py server/database/
 
-ENV PYTHONPATH=/dirfortest/
+ENV PYTHONPATH=/dirforprod/
 
 CMD ["uvicorn", "server.app.main:app", "--host", "0.0.0.0", "--port", "8000"]

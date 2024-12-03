@@ -1,3 +1,7 @@
+"""
+Модуль тестирования /api/users/
+"""
+
 import random
 from typing import Dict
 
@@ -146,7 +150,9 @@ class TestPostUserFollow:
         assert response.json() == USER_NOT_FOUND
 
     @pytest.mark.usefixtures("random_user_for_func")
-    def test_post_user_follow_wrong_apikey(self, random_user_for_func, client: TestClient):
+    def test_post_user_follow_wrong_apikey(
+        self, random_user_for_func, client: TestClient
+    ):
         """
         Неверный APIKEY.
         """

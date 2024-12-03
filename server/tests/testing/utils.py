@@ -1,3 +1,7 @@
+"""
+Модуль утилит используемых в тестах.
+"""
+
 from typing import Dict
 from io import BytesIO
 
@@ -18,6 +22,12 @@ INVALID_HEADERS = {"api-key": Faker.password()}
 
 
 def get_dict_about_user(user: User) -> Dict:
+    """
+    Формирует словарь с информацией о пользователе и его подписках.
+
+    :param user: Объект пользователя, содержащий данные о подписках и подписчиках.
+    :return: Словарь с данными о пользователе, подписчиках и подписках.
+    """
     return {
         "result": True,
         "user": {
@@ -42,6 +52,12 @@ def get_dict_about_user(user: User) -> Dict:
 
 
 def get_dict_tweet_feed(session: Session) -> Dict:
+    """
+    Формирует структуру данных для ленты твитов.
+
+    :param tweets: Список твитов, для которых будет сформирована лента.
+    :return: Словарь с данными о твитах, включая их контент, медиа, авторов и лайки.
+    """
     stmt = select(Tweet).options(
         joinedload(Tweet.author),
         joinedload(Tweet.likes).joinedload(Like.user),
@@ -77,6 +93,11 @@ def get_dict_tweet_feed(session: Session) -> Dict:
 
 
 def get_valid_image() -> Dict:
+    """
+    Формирует словарь с содержанием валидной картинки.
+
+    :return: Словарь с данными о файле.
+    """
     image_content = b"test content"
     image_file = BytesIO(image_content)
     files = {"file": ("image.jpg", image_file)}
@@ -85,6 +106,11 @@ def get_valid_image() -> Dict:
 
 
 def get_tweet_data() -> Dict:
+    """
+    Формирует словарь с содержанием данных твита.
+
+    :return: Словарь с данными твита.
+    """
     tweet_data = {
         "tweet_data": Faker.text(),
         "tweet_media_ids": [],

@@ -1,3 +1,7 @@
+"""
+Модуль тестирования /api/tweets/
+"""
+
 import os
 import random
 from typing import Dict
@@ -111,7 +115,9 @@ class TestPostTweets:
 
 @pytest.mark.usefixtures("init_tweet_and_its_author")
 class TestPostLike:
-    def test_post_like_success(self, init_tweet_and_its_author: (Tweet, User), client: TestClient):
+    def test_post_like_success(
+        self, init_tweet_and_its_author: (Tweet, User), client: TestClient
+    ):
         tweet, user = init_tweet_and_its_author
 
         url = f"{URL}/{tweet.id}/likes"
@@ -158,7 +164,9 @@ class TestPostLike:
         assert response.status_code == 404
         assert response.json() == {"detail": "Tweet not found"}
 
-    def test_post_like_again(self, init_tweet_and_its_author: (Tweet, User), client: TestClient):
+    def test_post_like_again(
+        self, init_tweet_and_its_author: (Tweet, User), client: TestClient
+    ):
         """
         Попытка поставить лайк второй раз.
         """

@@ -1,3 +1,7 @@
+"""
+Модуль утилит используемых в роутах.
+"""
+
 from typing import Sequence
 
 from server.database.models import User, Tweet, Like
@@ -235,7 +239,7 @@ async def lazy_get_tweet_by_id(tweet_id: int, session: AsyncSession) -> Tweet:
     tweet = result.scalars().first()
 
     if not tweet:
-        logger.warning(f'Tweet not found for ID {tweet_id}')
+        logger.warning(f"Tweet not found for ID {tweet_id}")
         raise HTTPException(status_code=404, detail="Tweet not found")
 
     return tweet
