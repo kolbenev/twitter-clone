@@ -2,15 +2,15 @@ FROM python:3.12
 
 WORKDIR /dirfortest
 
-COPY requirements_for_prod.txt .
+COPY requirements_for_tests.txt .
 
-RUN pip install --no-cache-dir -r requirements_for_prod.txt
+RUN pip install --no-cache-dir -r requirements_for_tests.txt
 
 COPY app server/app/
 COPY tests server/tests/
-COPY database/confdb.py server/database/confdb.py
-COPY database/models.py server/database/models.py
-COPY database/getter_variables.py server/database/getter_variables.py
+COPY database/confdb.py server/database/
+COPY database/models.py server/database/
+COPY database/getter_variables.py server/database/
 
 ENV PYTHONPATH=/dirfortest/
 
