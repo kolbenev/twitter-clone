@@ -18,7 +18,7 @@ from server.app.loggerconf import logger
 
 
 router = APIRouter()
-BASE_URL = "http://localhost"
+BASE_URL = "http://127.0.0.1"
 
 
 @router.post("/")
