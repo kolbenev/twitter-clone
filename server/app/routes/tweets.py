@@ -84,8 +84,11 @@ async def post_tweets(tweet_data: dict, api_key: str = Header(...)) -> JSONRespo
 
     await session.commit()
     logger.info(
-        f"User {user.name}:{user.id} created a new tweet. "
-        f'Tweet ID: {new_tweet.id}, Content: "{content}", Media IDs: {media_ids}'
+        f"User {
+            user.name}:{
+            user.id} created a new tweet. "
+        f'Tweet ID: {
+                new_tweet.id}, Content: "{content}", Media IDs: {media_ids}'
     )
 
     return JSONResponse({"result": True, "tweet_id": new_tweet.id})
@@ -180,7 +183,10 @@ async def delete_tweet(tweet_id: int, api_key: str = Header(...)) -> JSONRespons
 
     else:
         logger.warning(
-            f"{user.name}:{user.id} try to delete tweet '{tweet.id}, but he is not the author of this tweet'"
+            f"{
+                user.name}:{
+                user.id} try to delete tweet '{
+                tweet.id}, but he is not the author of this tweet'"
         )
         raise HTTPException(
             status_code=403, detail="The user is not the author of the tweet"

@@ -43,7 +43,9 @@ async def post_medias(file: UploadFile, api_key: str = Header(...)) -> JSONRespo
 
     if not file:
         logger.warning(
-            f"User {user.name}:{user.id} attempted to upload a media file but no file was provided."
+            f"User {
+                user.name}:{
+                user.id} attempted to upload a media file but no file was provided."
         )
         raise HTTPException(status_code=400, detail="No file upload")
 
@@ -51,14 +53,21 @@ async def post_medias(file: UploadFile, api_key: str = Header(...)) -> JSONRespo
     os.makedirs(media_dir, exist_ok=True)
 
     file_format = file.filename.split(".")[-1]
-    new_file_name = f"{''.join(random.choice(string.ascii_letters) for _ in range(10))}.{file_format}"
+    new_file_name = f"{
+        ''.join(
+            random.choice(
+                string.ascii_letters) for _ in range(10))}.{file_format}"
 
     file_path = os.path.join(media_dir, new_file_name)
 
     async with aiofiles.open(file_path, "wb") as medias_file:
         content = await file.read()
         await medias_file.write(content)
-        logger.info(f"User {user.name}:{user.id} uploaded a new file: {file_path}")
+        logger.info(
+            f"User {
+                user.name}:{
+                user.id} uploaded a new file: {file_path}"
+        )
 
     file_url = urljoin(BASE_URL, f"medias/{user.id}/{new_file_name}")
 

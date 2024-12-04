@@ -10,7 +10,7 @@ from alembic import context
 from server.database.confdb import Base
 
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 
 target_metadata = Base.metadata
 config = context.config

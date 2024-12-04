@@ -14,4 +14,4 @@ COPY database/getter_variables.py server/database/
 
 ENV PYTHONPATH=/dirfortest/
 
-CMD ["pytest"]
+CMD ["bash", "-c", "flake8 --select=BLK . && pytest"]

@@ -179,7 +179,9 @@ class TestPostUserFollow:
 
         assert response.status_code == 400
         assert response.json() == {
-            "detail": f"{test_user.name} is already subscribed to {new_user.name}"
+            "detail": f"{
+                test_user.name} is already subscribed to {
+                new_user.name}"
         }
 
     def test_post_follow_to_yourself(self, init_user: User, client: TestClient):
